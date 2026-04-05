@@ -16,12 +16,13 @@ app.layout = html.Div([
     
     html.H1(
         "Pink Morsel Sales Dashboard",
+        id="header",  # ✅ REQUIRED FOR TEST
         style={"textAlign": "center", "color": "#2c3e50"}
     ),
 
     # Radio buttons
     dcc.RadioItems(
-        id="region-filter",
+        id="region-filter",  # ✅ REQUIRED FOR TEST
         options=[
             {"label": "All", "value": "all"},
             {"label": "North", "value": "north"},
@@ -35,7 +36,7 @@ app.layout = html.Div([
     ),
 
     # Graph
-    dcc.Graph(id="sales-chart")
+    dcc.Graph(id="sales-chart")  # ✅ REQUIRED FOR TEST
 
 ],
 style={
@@ -43,7 +44,7 @@ style={
     "padding": "20px"
 })
 
-# Callback (dynamic filtering)
+# Callback
 @app.callback(
     Output("sales-chart", "figure"),
     Input("region-filter", "value")
@@ -55,10 +56,8 @@ def update_chart(selected_region):
     else:
         filtered_df = df[df["region"].str.lower() == selected_region]
 
-    # Group data
     grouped = filtered_df.groupby("date")["sales"].sum().reset_index()
 
-    # Create chart
     fig = px.line(
         grouped,
         x="date",
@@ -67,12 +66,10 @@ def update_chart(selected_region):
         labels={"date": "Date", "sales": "Total Sales"}
     )
 
-    # Optional: price change marker
     fig.add_vline(x="2021-01-15", line_dash="dash", line_color="red")
 
     return fig
 
 
-# Run app
 if __name__ == "__main__":
     app.run(debug=True)
